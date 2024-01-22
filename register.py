@@ -49,10 +49,10 @@ class register_class:
         self.var_check=IntVar()
         
         #row1
-        fname_lbl=Label(registerframe0,text="First Name",font=("times new roman",15,"bold"),bg="black",fg="white")
+        fname_lbl=Label(registerframe0,text="First Name*",font=("times new roman",15,"bold"),bg="black",fg="white")
         fname_lbl.place(x=500,y=80)
         self.fname_entry=ttk.Entry(registerframe0,textvariable=self.var_fname,font=("times new roman",15,"bold"))
-        self.fname_entry.place(x=500,y=110,width=250)
+        self.fname_entry.place(x=500,y=110,width=270)
 
         lname_lbl=Label(registerframe0,text="Last Name",font=("times new roman",15,"bold"),bg="black",fg="white")
         lname_lbl.place(x=820,y=80)
@@ -63,9 +63,9 @@ class register_class:
         contact_lbl=Label(registerframe0,text="Contact No.",font=("times new roman",15,"bold"),bg="black",fg="white")
         contact_lbl.place(x=500,y=150)
         self.contact_entry=ttk.Entry(registerframe0,textvariable=self.var_contact,font=("times new roman",15,"bold"))
-        self.contact_entry.place(x=500,y=180,width=250)
+        self.contact_entry.place(x=500,y=180,width=270)
         
-        email_lbl=Label(registerframe0,text="E-Mail",font=("times new roman",15,"bold"),bg="black",fg="white")
+        email_lbl=Label(registerframe0,text="E-Mail*",font=("times new roman",15,"bold"),bg="black",fg="white")
         email_lbl.place(x=820,y=150)
         self.email_entry=ttk.Entry(registerframe0,textvariable=self.var_email,font=("times new roman",15,"bold"))
         self.email_entry.place(x=820,y=180,width=250)
@@ -75,7 +75,7 @@ class register_class:
         securityques_lbl.place(x=500,y=220)
         self.comboques=ttk.Combobox(registerframe0,textvariable=self.var_securityQ,font=("times new roman",15,"bold"),state="readonly")
         self.comboques["values"]=("Select","Your Birth Place","Your First School","Your Nick Name","Your Pet Name","Your Friend Name")
-        self.comboques.place(x=500,y=250,width=250)
+        self.comboques.place(x=500,y=250,width=270)
         self.comboques.current(0)
 
         securityans_lbl=Label(registerframe0,text="Security Answer",font=("times new roman",15,"bold"),bg="black",fg="white")
@@ -84,63 +84,109 @@ class register_class:
         self.securityans_entry.place(x=820,y=250,width=250)
         
         #row4
-        password_lbl=Label(registerframe0,text="Password",font=("times new roman",15,"bold"),bg="black",fg="white")
+        password_lbl=Label(registerframe0,text="Password*",font=("times new roman",15,"bold"),bg="black",fg="white")
         password_lbl.place(x=500,y=290)
-        self.password_entry=ttk.Entry(registerframe0,textvariable=self.var_pass,font=("times new roman",15,"bold"))
-        self.password_entry.place(x=500,y=320,width=250)
+        self.password_entry=ttk.Entry(registerframe0,textvariable=self.var_pass,font=("times new roman",15,"bold"),show="*")
+        self.password_entry.place(x=500,y=320,width=270)
         
-        confirmpassword_lbl=Label(registerframe0,text="Confirm Password",font=("times new roman",15,"bold"),bg="black",fg="white")
+        confirmpassword_lbl=Label(registerframe0,text="Confirm Password*",font=("times new roman",15,"bold"),bg="black",fg="white")
         confirmpassword_lbl.place(x=820,y=290)
-        self.confirmpassword_entry=ttk.Entry(registerframe0,textvariable=self.var_confpass,font=("times new roman",15,"bold"))
+        self.confirmpassword_entry=ttk.Entry(registerframe0,textvariable=self.var_confpass,font=("times new roman",15,"bold"),show="*")
         self.confirmpassword_entry.place(x=820,y=320,width=250)
         
         #checkbutton
-        checkbtn=Checkbutton(registerframe0,variable=self.var_check,text="I Agree The Terms & Conditions",font=("times new roman",13,"bold"),onvalue=1,offvalue=0,bg="white",activebackground="white",activeforeground="black")
-        checkbtn.place(x=500,y=360)
+        checkbtn=Checkbutton(registerframe0,variable=self.var_check,text="I Agree The Terms & Conditions*",font=("times new roman",13,"bold"),onvalue=1,offvalue=0,bg="white",activebackground="white",activeforeground="black")
+        checkbtn.place(x=500,y=370)
         
         # buttons
+        reset_details_btn=Button(registerframe0,command=self.reset_details,text="Reset Details",cursor="hand2",bd=2,relief=RIDGE, font="verdana 15 bold",fg="white",bg="red",activeforeground="white",activebackground="red")
+        reset_details_btn.place(x=870,y=370,width=150,height=30)
+        
         register_img0=Image.open("registerbtnimg.png")
         register_img0=register_img0.resize((150,50))
         self.register_btnimg=ImageTk.PhotoImage(register_img0)
         reg_btn1=Button(registerframe0,command=self.register_validation,image=self.register_btnimg,borderwidth=0,cursor="hand2",bg="black",activebackground="black")
-        reg_btn1.place(x=600,y=400,width=150,height=50)
+        reg_btn1.place(x=560,y=410,width=150,height=50)
 
         loginagain_img=Image.open("loginnowbtn.jpg")
         loginagain_img=loginagain_img.resize((150,40))
         self.loginagain_btnimg=ImageTk.PhotoImage(loginagain_img)
         loginagain_btn2=Button(registerframe0,command=self.return_login,image=self.loginagain_btnimg,borderwidth=0,cursor="hand2",bg="black",activebackground="black")
-        loginagain_btn2.place(x=850,y=400,width=150,height=50)
+        loginagain_btn2.place(x=870,y=415,width=150,height=35)
+    
+    def reset_details(self):
+        if(self.fname_entry.get()=="" and self.lname_entry.get()=="" and self.contact_entry.get()=="" and self.email_entry.get()=="" and self.comboques.get()=="Select" and self.securityans_entry.get()=="" and self.password_entry.get()=="" and self.confirmpassword_entry.get()=="" and self.var_check.get()==0):
+            messagebox.showwarning("Already Reset","All Fields are already Empty",parent=self.win)
+            return
+        self.fname_entry.delete(0, 'end')
+        self.lname_entry.delete(0, 'end')
+        self.contact_entry.delete(0, 'end')
+        self.email_entry.delete(0, 'end')
+        self.comboques.set("Select")
+        self.securityans_entry.delete(0, 'end')
+        self.password_entry.delete(0, 'end')
+        self.confirmpassword_entry.delete(0, 'end')
+        self.var_check.set(0)
         
     def register_validation(self):
-        if self.var_fname.get()=="" or self.var_email.get()=="" or self.var_securityQ.get()=="":
+        if self.var_fname.get()=="" or self.var_email.get()=="" or self.var_pass.get()=="" or self.var_confpass.get()=="":
             messagebox.showerror("Error","All Fields are Required",parent=self.win)
         elif self.var_pass.get()!=self.var_confpass.get():    
             messagebox.showerror("Error","Password and Confirm Password must be same",parent=self.win)
         elif self.var_check.get()==0:
             messagebox.showerror("Error","Please Agree the Terms & Conditions",parent=self.win)
         else:
-            conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
-            my_cursor=conn.cursor()
-            query=("Select * from register where email=%s")
-            value=(self.var_email.get(),)
-            my_cursor.execute(query,value)
-            row=my_cursor.fetchone()
-            if(row!=None):
-                messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+            if self.var_securityQ.get()=="Select" or self.var_securityA.get()=="":
+                confirmation = messagebox.askquestion("Without Security Question", "Are you sure you want to continue without security question?,You will not be able to reset yor password in future!", icon='warning',parent=self.win)
+                if confirmation == "yes":
+                    conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
+                    my_cursor=conn.cursor()
+                    query=("Select * from register where email=%s")
+                    value=(self.var_email.get(),)
+                    my_cursor.execute(query,value)
+                    row=my_cursor.fetchone()
+                    if(row!=None):
+                        messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+                    else:
+                        my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
+                            self.var_fname.get(),
+                            self.var_lname.get(),
+                            self.var_contact.get(),
+                            self.var_email.get(),
+                            self.var_securityQ.get(),
+                            self.var_securityA.get(),
+                            self.var_pass.get()
+                        ))
+                    conn.commit()
+                    conn.close()
+                else:
+                    return
             else:
-                my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
-                    self.var_fname.get(),
-                    self.var_lname.get(),
-                    self.var_contact.get(),
-                    self.var_email.get(),
-                    self.var_securityQ.get(),
-                    self.var_securityA.get(),
-                    self.var_pass.get()
-                ))
-            conn.commit()
-            conn.close()
+                conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
+                my_cursor=conn.cursor()
+                query=("Select * from register where email=%s")
+                value=(self.var_email.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+                if(row!=None):
+                    messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+                else:
+                    my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
+                        self.var_fname.get(),
+                        self.var_lname.get(),
+                        self.var_contact.get(),
+                        self.var_email.get(),
+                        self.var_securityQ.get(),
+                        self.var_securityA.get(),
+                        self.var_pass.get()
+                    ))
+                conn.commit()
+                conn.close()
             messagebox.showinfo("Success","Registered Successfully",parent=self.win)
             self.win.destroy()
+            
+    def return_login(self):
+        self.win.destroy()
             
     def return_login(self):
         self.win.destroy()

@@ -727,6 +727,9 @@ class TicketBookingApp:
         return available_seats
 
     def create_passenger_widgets(self, num_passengers):
+        if len(self.passenger_entries)>=10:
+            messagebox.showwarning("No more Passenger","Book atmost 10 seats at a time",parent=self.root)
+            return
         frame = tk.Frame(self.root)
         frame.pack(pady=10)
 

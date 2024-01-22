@@ -8,6 +8,8 @@ from datetime import datetime, timedelta
 from datetime import date
 import mysql.connector
 from tkcalendar import DateEntry 
+from tkinter import simpledialog
+
 
 
 def main():
@@ -58,6 +60,9 @@ class login_class:
         password_lbl.place(x=70,y=235)
         self.password_txt=ttk.Entry(loginframe0,font=("times new roman",15,"bold"),show='*')
         self.password_txt.place(x=40,y=267,width=270)
+        global x,y 
+        x=self.username_txt
+        y=self.password_txt
         
         #icon images
         icon_img1=Image.open("usernameicon.png")
@@ -73,15 +78,15 @@ class login_class:
         frameimg_lbl.place(x=40,y=235,width=25,height=25)
         
         #login button
-        login_btn=Button(loginframe0,command=self.login_validation,text="Login", font=("times new roman",15,"bold"),bd=3,relief=RIDGE,fg="white",bg="red",activeforeground="white",activebackground="red")
+        login_btn=Button(loginframe0,command=self.login_validation,cursor="hand2",text="Login", font=("times new roman",15,"bold"),bd=3,relief=RIDGE,fg="white",bg="red",activeforeground="white",activebackground="red")
         login_btn.place(x=110,y=310,width=120,height=35)
         
         #register new user button
-        login_btn=Button(loginframe0,command=self.register_window,text="New User Register", font=("times new roman",10,"bold"),borderwidth=0,fg="white",bg="black",activeforeground="white",activebackground="black")
+        login_btn=Button(loginframe0,command=self.register_window,cursor="hand2",text="New User Register", font=("times new roman",10,"bold"),borderwidth=0,fg="white",bg="black",activeforeground="white",activebackground="black")
         login_btn.place(x=20,y=370,width=160)
         
         #forgot password button
-        login_btn=Button(loginframe0,command=self.forgot_pass, text="Forget Password?", font=("times new roman",10,"bold"),borderwidth=0,fg="white",bg="black",activeforeground="white",activebackground="black")
+        login_btn=Button(loginframe0,command=self.forgot_pass,cursor="hand2", text="Forget Password?", font=("times new roman",10,"bold"),borderwidth=0,fg="white",bg="black",activeforeground="white",activebackground="black")
         login_btn.place(x=18,y=390,width=160)
     
     def register_window(self):
@@ -107,7 +112,7 @@ class login_class:
                 if open_main:
                     journey_info_window = Toplevel(self.win)
                     journey_info_window.title("Journey Information")
-                    journey_info_window.geometry("400x250")
+                    journey_info_window.geometry("1550x800+0+0")
                     JourneyInfo(journey_info_window, self.username)
             conn.commit()
             conn.close()
@@ -138,9 +143,6 @@ class login_class:
                 conn.close()
                 messagebox.showinfo("Updated","Your Password has been updated Successfully",parent=self.win)
                 self.root2.destroy()
-            
-    
-    
     
     def forgot_pass(self):
         if self.username_txt.get()=="":
@@ -148,8 +150,8 @@ class login_class:
         else:
             conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
             my_cursor=conn.cursor()
-            query=("select * from register where email=%s")
-            value=(self.username_txt.get(),)
+            query=("select * from register where email=%s and securityques!=%s and securityans!=%s")
+            value=(self.username_txt.get(),"Select","",)
             my_cursor.execute(query,value)
             row=my_cursor.fetchone()
             
@@ -181,135 +183,8 @@ class login_class:
                 self.new_pass_entry=ttk.Entry(self.root2,font=("times new roman",15,"bold"))
                 self.new_pass_entry.place(x=50,y=250,width=250)
 
-                btn1=Button(self.root2,text="Reset",command=self.reset_pass,font=("times new roman",15,"bold"),fg="white",bg="green",border="1px solid black",activebackground="green",activeforeground="white")
-                btn1.place(x=150,y=290)
-
-class JourneyInfo:
-    def __init__(self, win, username):
-        self.win = win
-        self.win.title("Journey Information")
-        self.win.geometry("1550x800+0+0")
-        self.win.configure(bg="black")
-        self.username = username
-        
-        self.journey_info_heading = Label(self.win, text="Journey Information",font=("times new roman",35,"bold"),fg="blue",highlightbackground="green",highlightthickness=4)
-        self.journey_info_heading.place(x=475, y=45)
-
-        self.label_date = Label(win, text="Select Date of Journey:",font="verdana 15 bold",bg="black",fg="white")
-        self.label_date.place(x=200,y=140)
-
-        self.entry_date = DateEntry(win, width=12, background='darkblue', foreground='white', borderwidth=2,font="verdana 10 bold")
-        self.entry_date.place(x=900,y=150,width=140)
-
-        self.label_class = Label(win, text="Class of Train:",font="verdana 15 bold",bg="black",fg="white")
-        self.label_class.place(x=200,y=190)
-        self.combo_class = ttk.Combobox(win, values=["Sleeper", "1st AC", "2nd AC", "3rd AC"],state="readonly",font="verdana 10 bold")
-        self.combo_class.set("Sleeper")
-        self.combo_class.place(x=900,y=190,width=140)
-
-        self.view_existing_tickets_button = Button(win, text="Already Booked", command=self.view_existing_tickets,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="blue", activeforeground="white", activebackground="blue")
-        self.view_existing_tickets_button.place(x=150,y=280,width=200,height=35)
-        
-        self.confirm_button = Button(win, text="Confirm", command=lambda: self.confirm_journey(username),bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="green",activeforeground="white",activebackground="green")
-        self.confirm_button.place(x=590,y=280,width=120,height=35)
-
-        self.bck_button0= Button(win, text="Go Back", command=lambda:self.back(win),bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="purple",activeforeground="white",activebackground="purple")
-        self.bck_button0.place(x=1000,y=280,width=120,height=35)
-    
-    def back(self,win):
-        win.destroy()
-
-    def confirm_journey(self,username):
-        date_of_journey = self.entry_date.get_date().strftime("%Y-%m-%d")
-        train_class = self.combo_class.get()
-
-        if date_of_journey and train_class:
-            ticket_booking_window = Toplevel() 
-            ticket_booking_window.title("Railway Ticket Booking")
-            ticket_booking_window.geometry("500x400")
-            ticket_booking_app = TicketBookingApp(ticket_booking_window,username, date_of_journey, train_class)
-          
-    def view_existing_tickets(self):
-        conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
-        my_cursor = conn.cursor()
-        query = "SELECT id,train_name, num_passengers, date_of_journey, train_class FROM tickets WHERE username = %s"
-        values = (self.username,)
-        my_cursor.execute(query, values)
-        tickets = my_cursor.fetchall()
-        conn.close()
-        if tickets:
-            self.show_ticket_table(tickets)
-        else:
-            messagebox.showinfo("No Upcoming Journeys", "You have no upcoming journeys.",parent=self.win)
-
-    def show_ticket_table(self, tickets):
-        frame = ttk.Frame(self.win,border="4px solid")
-        frame.place(x=2, y=370)
-
-        ticket_table = ttk.Treeview(frame, columns=("Select", "Ticket ID", "TrainName","No. of Passengers","JourneyDate", "Class"))
-        ticket_table.heading("#0", text="Select")
-        ticket_table.heading("#1", text="Ticket ID")
-        ticket_table.heading("#2", text="TrainName")
-        ticket_table.heading("#3", text="No. of Passengers")
-        ticket_table.heading("#4", text="JourneyDate")
-        ticket_table.heading("#5", text="Class")
-
-        vsb = ttk.Scrollbar(frame, orient="vertical", command=ticket_table.yview)
-        ticket_table.configure(yscrollcommand=vsb.set)
-
-        ticket_table.grid(row=0, column=0, sticky='nsew')
-        vsb.grid(row=0, column=1, sticky='ns')
-        frame.grid_rowconfigure(0, weight=1)
-        frame.grid_columnconfigure(0, weight=1)
-
-        for ticket in tickets:
-            ticket_table.insert("", "end", values=("0", *ticket))
-            
-        cancel_button = tk.Button(self.win,text="Cancel Tickets", command=lambda: self.cancel_tickets(ticket_table),bd=3,relief=RIDGE,font="verdana 15 bold",fg="white",bg="red",activeforeground="white",activebackground="red")
-        cancel_button.place(x=600,y=620,width=200,height=35)
-
-
-    def cancel_tickets(self, ticket_table):
-        selected_tickets = []
-        for item in ticket_table.get_children():
-            if ticket_table.item(item, "values")[0]:
-                selected_tickets.append(ticket_table.item(item, "values")[1:])
-
-        if selected_tickets:
-            confirmation = messagebox.askquestion("Confirm Cancel", "Are you sure you want to cancel the selected tickets?",parent=self.win)
-            if confirmation == "yes":
-                for ticket_info in selected_tickets:
-                    self.cancel_ticket(ticket_info, ticket_table)
-                for item in ticket_table.get_children():
-                    if ticket_table.item(item, "values")[1:] in selected_tickets:
-                        ticket_table.delete(item)
-                messagebox.showinfo("Cancellation Successful", "Selected tickets have been canceled successfully.",parent=self.win)
-        else:
-            messagebox.showinfo("No Selection", "Please select at least one ticket to cancel.",parent=self.win)
-
-    def cancel_ticket(self, ticket_info, ticket_table):
-        try:
-            conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
-            my_cursor = conn.cursor()
-            current_seats_query = "SELECT available_seats FROM seat_availability WHERE date_of_journey = %s AND train_class = %s"
-            current_seats_values = (ticket_info[3], ticket_info[4])
-            my_cursor.execute(current_seats_query, current_seats_values)
-            current_seats = my_cursor.fetchone()[0]
-            updated_seats = current_seats + int(ticket_info[2])
-
-            update_seats_query = "UPDATE seat_availability SET available_seats = %s WHERE date_of_journey = %s AND train_class = %s"
-            update_seats_values = (updated_seats, ticket_info[3], ticket_info[4])
-            my_cursor.execute(update_seats_query, update_seats_values)
-
-            delete_ticket_query = "DELETE FROM tickets WHERE username = %s AND id = %s AND train_name = %s AND num_passengers = %s AND date_of_journey = %s AND train_class = %s"
-            delete_ticket_values = (self.username, *ticket_info)
-            my_cursor.execute(delete_ticket_query, delete_ticket_values)
-            conn.commit()
-        except mysql.connector.Error as err:
-            print("Error canceling tickets:", err)
-        finally:
-            if conn.is_connected():
-                conn.close()  
+                btn1=Button(self.root2,text="Reset",command=self.reset_pass,font=("times new roman",15,"bold"),fg="white",bg="green",activebackground="green",activeforeground="white",cursor="hand2",bd=2,relief=RIDGE)
+                btn1.place(x=150,y=290) 
         
 class register_class:
     def __init__(self,win):
@@ -356,10 +231,10 @@ class register_class:
         self.var_check=IntVar()
         
         #row1
-        fname_lbl=Label(registerframe0,text="First Name",font=("times new roman",15,"bold"),bg="black",fg="white")
+        fname_lbl=Label(registerframe0,text="First Name*",font=("times new roman",15,"bold"),bg="black",fg="white")
         fname_lbl.place(x=500,y=80)
         self.fname_entry=ttk.Entry(registerframe0,textvariable=self.var_fname,font=("times new roman",15,"bold"))
-        self.fname_entry.place(x=500,y=110,width=250)
+        self.fname_entry.place(x=500,y=110,width=270)
 
         lname_lbl=Label(registerframe0,text="Last Name",font=("times new roman",15,"bold"),bg="black",fg="white")
         lname_lbl.place(x=820,y=80)
@@ -370,9 +245,9 @@ class register_class:
         contact_lbl=Label(registerframe0,text="Contact No.",font=("times new roman",15,"bold"),bg="black",fg="white")
         contact_lbl.place(x=500,y=150)
         self.contact_entry=ttk.Entry(registerframe0,textvariable=self.var_contact,font=("times new roman",15,"bold"))
-        self.contact_entry.place(x=500,y=180,width=250)
+        self.contact_entry.place(x=500,y=180,width=270)
         
-        email_lbl=Label(registerframe0,text="E-Mail",font=("times new roman",15,"bold"),bg="black",fg="white")
+        email_lbl=Label(registerframe0,text="E-Mail*",font=("times new roman",15,"bold"),bg="black",fg="white")
         email_lbl.place(x=820,y=150)
         self.email_entry=ttk.Entry(registerframe0,textvariable=self.var_email,font=("times new roman",15,"bold"))
         self.email_entry.place(x=820,y=180,width=250)
@@ -382,7 +257,7 @@ class register_class:
         securityques_lbl.place(x=500,y=220)
         self.comboques=ttk.Combobox(registerframe0,textvariable=self.var_securityQ,font=("times new roman",15,"bold"),state="readonly")
         self.comboques["values"]=("Select","Your Birth Place","Your First School","Your Nick Name","Your Pet Name","Your Friend Name")
-        self.comboques.place(x=500,y=250,width=250)
+        self.comboques.place(x=500,y=250,width=270)
         self.comboques.current(0)
 
         securityans_lbl=Label(registerframe0,text="Security Answer",font=("times new roman",15,"bold"),bg="black",fg="white")
@@ -391,67 +266,401 @@ class register_class:
         self.securityans_entry.place(x=820,y=250,width=250)
         
         #row4
-        password_lbl=Label(registerframe0,text="Password",font=("times new roman",15,"bold"),bg="black",fg="white")
+        password_lbl=Label(registerframe0,text="Password*",font=("times new roman",15,"bold"),bg="black",fg="white")
         password_lbl.place(x=500,y=290)
-        self.password_entry=ttk.Entry(registerframe0,textvariable=self.var_pass,font=("times new roman",15,"bold"))
-        self.password_entry.place(x=500,y=320,width=250)
+        self.password_entry=ttk.Entry(registerframe0,textvariable=self.var_pass,font=("times new roman",15,"bold"),show="*")
+        self.password_entry.place(x=500,y=320,width=270)
         
-        confirmpassword_lbl=Label(registerframe0,text="Confirm Password",font=("times new roman",15,"bold"),bg="black",fg="white")
+        confirmpassword_lbl=Label(registerframe0,text="Confirm Password*",font=("times new roman",15,"bold"),bg="black",fg="white")
         confirmpassword_lbl.place(x=820,y=290)
-        self.confirmpassword_entry=ttk.Entry(registerframe0,textvariable=self.var_confpass,font=("times new roman",15,"bold"))
+        self.confirmpassword_entry=ttk.Entry(registerframe0,textvariable=self.var_confpass,font=("times new roman",15,"bold"),show="*")
         self.confirmpassword_entry.place(x=820,y=320,width=250)
         
         #checkbutton
-        checkbtn=Checkbutton(registerframe0,variable=self.var_check,text="I Agree The Terms & Conditions",font=("times new roman",13,"bold"),onvalue=1,offvalue=0,bg="white",activebackground="white",activeforeground="black")
-        checkbtn.place(x=500,y=360)
+        checkbtn=Checkbutton(registerframe0,variable=self.var_check,text="I Agree The Terms & Conditions*",font=("times new roman",13,"bold"),onvalue=1,offvalue=0,bg="white",activebackground="white",activeforeground="black")
+        checkbtn.place(x=500,y=370)
         
         # buttons
+        reset_details_btn=Button(registerframe0,command=self.reset_details,text="Reset Details",cursor="hand2",bd=2,relief=RIDGE, font="verdana 15 bold",fg="white",bg="red",activeforeground="white",activebackground="red")
+        reset_details_btn.place(x=870,y=370,width=150,height=30)
+        
         register_img0=Image.open("registerbtnimg.png")
         register_img0=register_img0.resize((150,50))
         self.register_btnimg=ImageTk.PhotoImage(register_img0)
         reg_btn1=Button(registerframe0,command=self.register_validation,image=self.register_btnimg,borderwidth=0,cursor="hand2",bg="black",activebackground="black")
-        reg_btn1.place(x=600,y=400,width=150,height=50)
+        reg_btn1.place(x=560,y=410,width=150,height=50)
 
         loginagain_img=Image.open("loginnowbtn.jpg")
         loginagain_img=loginagain_img.resize((150,40))
         self.loginagain_btnimg=ImageTk.PhotoImage(loginagain_img)
         loginagain_btn2=Button(registerframe0,command=self.return_login,image=self.loginagain_btnimg,borderwidth=0,cursor="hand2",bg="black",activebackground="black")
-        loginagain_btn2.place(x=850,y=400,width=150,height=50)
+        loginagain_btn2.place(x=870,y=415,width=150,height=35)
+    
+    def reset_details(self):
+        if(self.fname_entry.get()=="" and self.lname_entry.get()=="" and self.contact_entry.get()=="" and self.email_entry.get()=="" and self.comboques.get()=="Select" and self.securityans_entry.get()=="" and self.password_entry.get()=="" and self.confirmpassword_entry.get()=="" and self.var_check.get()==0):
+            messagebox.showwarning("Already Reset","All Fields are already Empty",parent=self.win)
+            return
+        self.fname_entry.delete(0, 'end')
+        self.lname_entry.delete(0, 'end')
+        self.contact_entry.delete(0, 'end')
+        self.email_entry.delete(0, 'end')
+        self.comboques.set("Select")
+        self.securityans_entry.delete(0, 'end')
+        self.password_entry.delete(0, 'end')
+        self.confirmpassword_entry.delete(0, 'end')
+        self.var_check.set(0)
         
     def register_validation(self):
-        if self.var_fname.get()=="" or self.var_email.get()=="" or self.var_securityQ.get()=="":
+        if self.var_fname.get()=="" or self.var_email.get()=="" or self.var_pass.get()=="" or self.var_confpass.get()=="":
             messagebox.showerror("Error","All Fields are Required",parent=self.win)
         elif self.var_pass.get()!=self.var_confpass.get():    
             messagebox.showerror("Error","Password and Confirm Password must be same",parent=self.win)
         elif self.var_check.get()==0:
             messagebox.showerror("Error","Please Agree the Terms & Conditions",parent=self.win)
         else:
-            conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
-            my_cursor=conn.cursor()
-            query=("Select * from register where email=%s")
-            value=(self.var_email.get(),)
-            my_cursor.execute(query,value)
-            row=my_cursor.fetchone()
-            if(row!=None):
-                messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+            if self.var_securityQ.get()=="Select" or self.var_securityA.get()=="":
+                confirmation = messagebox.askquestion("Without Security Question", "Are you sure you want to continue without security question?,You will not be able to reset yor password in future!", icon='warning',parent=self.win)
+                if confirmation == "yes":
+                    conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
+                    my_cursor=conn.cursor()
+                    query=("Select * from register where email=%s")
+                    value=(self.var_email.get(),)
+                    my_cursor.execute(query,value)
+                    row=my_cursor.fetchone()
+                    if(row!=None):
+                        messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+                    else:
+                        my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
+                            self.var_fname.get(),
+                            self.var_lname.get(),
+                            self.var_contact.get(),
+                            self.var_email.get(),
+                            self.var_securityQ.get(),
+                            self.var_securityA.get(),
+                            self.var_pass.get()
+                        ))
+                    conn.commit()
+                    conn.close()
+                else:
+                    return
             else:
-                my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
-                    self.var_fname.get(),
-                    self.var_lname.get(),
-                    self.var_contact.get(),
-                    self.var_email.get(),
-                    self.var_securityQ.get(),
-                    self.var_securityA.get(),
-                    self.var_pass.get()
-                ))
-            conn.commit()
-            conn.close()
+                conn=mysql.connector.connect(host="localhost",username="root",password="123456",database="passengerregister")
+                my_cursor=conn.cursor()
+                query=("Select * from register where email=%s")
+                value=(self.var_email.get(),)
+                my_cursor.execute(query,value)
+                row=my_cursor.fetchone()
+                if(row!=None):
+                    messagebox.showerror("Error","User Already Exist, Please try another Email",parent=self.win)
+                else:
+                    my_cursor.execute("Insert into register values(%s,%s,%s,%s,%s,%s,%s)",(
+                        self.var_fname.get(),
+                        self.var_lname.get(),
+                        self.var_contact.get(),
+                        self.var_email.get(),
+                        self.var_securityQ.get(),
+                        self.var_securityA.get(),
+                        self.var_pass.get()
+                    ))
+                conn.commit()
+                conn.close()
             messagebox.showinfo("Success","Registered Successfully",parent=self.win)
             self.win.destroy()
             
     def return_login(self):
         self.win.destroy()
+
+class JourneyInfo:
+    def __init__(self, win, username):
+        self.win = win
+        self.win.title("Journey Information")
+        self.win.geometry("1550x800+0+0")
+        self.win.configure(bg="black")
+        self.username = username
+        self.select_all_counter = 0
         
+        self.journey_info_heading = Label(self.win, text="Journey Information",font=("times new roman",35,"bold"),fg="blue",highlightbackground="green",highlightthickness=4)
+        self.journey_info_heading.place(x=475, y=45)
+
+        self.label_date = Label(win, text="Select Date of Journey:",font="verdana 15 bold",bg="black",fg="white")
+        self.label_date.place(x=200,y=140)
+
+        self.entry_date = DateEntry(win, width=12, background='darkblue', foreground='white', borderwidth=2,font="verdana 10 bold")
+        self.entry_date.place(x=900,y=150,width=140)
+
+        self.label_class = Label(win, text="Class of Train:",font="verdana 15 bold",bg="black",fg="white")
+        self.label_class.place(x=200,y=190)
+        self.combo_class = ttk.Combobox(win, values=["Select Class","Sleeper", "1st AC", "2nd AC", "3rd AC"],state="readonly",font="verdana 10 bold")
+        self.combo_class.set("Select Class")
+        self.combo_class.place(x=900,y=190,width=140)
+        
+        self.view_existing_tickets_button = Button(win, text="Already Booked", command=self.view_existing_tickets,cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="blue", activeforeground="white", activebackground="blue")
+        self.view_existing_tickets_button.place(x=150,y=300,width=200,height=35)
+        
+        self.confirm_button = Button(win, text="Confirm", command=lambda: self.confirm_journey(username),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="green",activeforeground="white",activebackground="green")
+        self.confirm_button.place(x=640,y=240,width=120,height=35)
+
+        self.bck_button0= Button(win, text="Log Out", command=lambda:self.back(win),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="purple",activeforeground="white",activebackground="purple")
+        self.bck_button0.place(x=1000,y=300,width=120,height=35)
+        
+        self.delete_acc_btn= Button(win, text="Delete Account", command=lambda:self.delete_acc(win),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="black",bg="white",activeforeground="black",activebackground="white")
+        self.delete_acc_btn.place(x=1000,y=620,width=200,height=35)
+            
+    def delete_acc(self, win):
+        password_confirm = simpledialog.askstring("Password Confirmation", "Please re-enter your password for confirmation:", show='*')
+        if password_confirm is None:
+            return
+
+        if self.check_password(password_confirm):
+            conn=None
+            try:
+                confirmation = messagebox.askquestion("Delete Account", "Are you sure you want to delete your account?", icon='warning',parent=self.win)
+                if confirmation == "yes":
+                    conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+                    my_cursor = conn.cursor()
+                    delete_user_query = "DELETE FROM register WHERE email = %s"
+                    delete_user_values = (x.get(),)
+                    my_cursor.execute(delete_user_query, delete_user_values)
+                    conn.commit()
+                    y.delete(0, 'end')
+                    x.delete(0, 'end')
+                    win.destroy()
+            except mysql.connector.Error as err:
+                print("Error deleting user account:", err)
+            finally:
+                if conn.is_connected():
+                    conn.close()
+        else:
+            messagebox.showerror("Password Mismatch", "Incorrect password. Please enter the correct password.",parent=self.win)
+    
+    def check_password(self, entered_password):
+        stored_password = y.get()
+        return entered_password == stored_password
+        
+    def back(self,win):
+        confirmation = messagebox.askquestion("LogOut Account", "Are you sure you want to Log-Out from your account?", icon='warning',parent=self.win)
+        if confirmation == "yes":
+            y.delete(0, 'end')
+            x.delete(0, 'end')
+            win.destroy()
+        
+    def confirm_journey(self, username):
+        date_of_journey = self.entry_date.get_date().strftime("%Y-%m-%d")
+        train_class = self.combo_class.get()
+        global a,b
+        a=self.entry_date
+        b=self.combo_class
+        today = datetime.now().date()
+        selected_date = datetime.strptime(date_of_journey, "%Y-%m-%d").date()
+        if selected_date < today:
+            messagebox.showwarning("Invalid Date", "Please select a future date for your journey.", parent=self.win)
+            return
+        if train_class=="Select Class":
+            messagebox.showwarning("Invalid Class", "Please select any Class of Train for your journey.", parent=self.win)
+            return
+        elif date_of_journey and train_class:
+            ticket_booking_window = Toplevel() 
+            ticket_booking_window.title("Railway Ticket Booking")
+            ticket_booking_window.geometry("500x400")
+            ticket_booking_app = TicketBookingApp(ticket_booking_window, username, date_of_journey, train_class)
+          
+    def view_existing_tickets(self):
+        conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+        my_cursor = conn.cursor()
+        query = "SELECT id,train_name, num_passengers, date_of_journey, train_class FROM tickets WHERE username = %s"
+        values = (self.username,)
+        my_cursor.execute(query, values)
+        tickets = my_cursor.fetchall()
+        conn.close()
+        if tickets:
+            self.show_ticket_table(tickets)
+        else:
+            messagebox.showinfo("No Upcoming Journeys", "You have no upcoming journeys.",parent=self.win)
+
+    def show_ticket_table(self, tickets):
+        frame = ttk.Frame(self.win, border="4px solid")
+        frame.place(x=2, y=370)
+
+        style = ttk.Style()
+        style.configure("Red.Treeview", background="yellow", foreground="black", font=("verdana", 10,"bold"), bordercolor="blue")
+        style.configure("Red.Treeview.Heading", background="green", foreground="black", font=("verdana", 10, "bold"))
+
+        style.configure("selected.Treeview", background="green", foreground="white", font=("verdana", 10, "bold"))
+        style.configure("unselected.Treeview", background="yellow", foreground="black", font=("verdana", 10,"bold"))
+
+        ticket_table = ttk.Treeview(frame, columns=("Select", "Ticket ID", "TrainName", "No. of Passengers", "JourneyDate", "Class"), style="Red.Treeview")
+        ticket_table.heading("#0", text="Select", anchor=tk.S)
+        ticket_table.heading("#1", text="Ticket ID", anchor=tk.S)
+        ticket_table.heading("#2", text="TrainName", anchor=tk.S)
+        ticket_table.heading("#3", text="No. of Passengers", anchor=tk.S)
+        ticket_table.heading("#4", text="JourneyDate", anchor=tk.S)
+        ticket_table.heading("#5", text="Class", anchor=tk.S)
+
+        vsb = ttk.Scrollbar(frame, orient="vertical", command=ticket_table.yview)
+        ticket_table.configure(yscrollcommand=vsb.set)
+
+        ticket_table.grid(row=0, column=0, sticky='nsew')
+        vsb.grid(row=0, column=1, sticky='ns')
+        frame.grid_rowconfigure(0, weight=1)
+        frame.grid_columnconfigure(0, weight=1)
+
+        def toggle_select(item):
+            current_value = ticket_table.item(item, "values")[0]
+            new_value = 1 - int(current_value)
+            ticket_table.item(item, values=(new_value, *ticket_table.item(item, "values")[1:]))
+            update_background_color(item)
+
+        def update_background_color(item):
+            current_value = ticket_table.item(item, "values")[0]
+            tag = "selected" if current_value == "1" else "unselected"
+            ticket_table.tag_configure(tag, background=style.lookup("{}.Treeview".format(tag), 'background'),foreground=style.lookup("{}.Treeview".format(tag), 'foreground'),font=style.lookup("{}.Treeview".format(tag), 'font'))
+            ticket_table.item(item, tags=(tag,))
+
+        def on_item_click(event):
+            item = ticket_table.selection()[0]      
+            toggle_select(item)
+
+        for ticket in tickets:
+            ticket_table.insert("", "end", values=("0", *ticket))
+
+        ticket_table.bind("<ButtonRelease-1>", on_item_click)
+        
+        show_tkt_btn = Button(self.win, text="Show Ticket", command=lambda: self.show_ticket(ticket_table),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="grey", activeforeground="white", activebackground="grey")
+        show_tkt_btn.place(x=600,y=300,width=200,height=35)
+
+        select_all_button = tk.Button(self.win, text="Select All", command=lambda: self.select_all(ticket_table,update_background_color), cursor="hand2",bd=3, relief=RIDGE, font="verdana 15 bold", fg="black", bg="yellow",activeforeground="Black", activebackground="yellow")
+        select_all_button.place(x=150, y=620, width=200, height=35)
+
+        cancel_button = tk.Button(self.win, text="Cancel Tickets", command=lambda: self.cancel_tickets(ticket_table),cursor="hand2", bd=3, relief=RIDGE, font="verdana 15 bold", fg="white", bg="red",activeforeground="white", activebackground="red")
+        cancel_button.place(x=600, y=620, width=200, height=35)
+    
+    def show_ticket(self,ticket_table):
+        one_ticket=[]
+        for item in ticket_table.get_children():
+            if ticket_table.item(item, "values")[0]=="1":
+                one_ticket.append(ticket_table.item(item, "values")[1:])
+        
+        if len(one_ticket)==0:
+            messagebox.showwarning("Invalid Selection", "Please select any one ticket for viewing.", parent=self.win)
+        elif len(one_ticket)==1:
+            confirm_mess="\t\t  INDIAN RAILWAYS\n\t\t      (Ticket Slip)\nTrain Name\t :-{}\nDate of Journey      :-{}\nClass of Train\t :-{}\n{} Berths was Booked on {}\n\n\t\tPassenger Details\n{}\nRs.{} amount is Booking Cost\nRs.15.71 amount is Booking Charges\nRs.{} is the Total Charged Amount for the Booking\n\n\n\nPlease take a Screenshot of the same for your Journey*".format(
+                str(one_ticket[0][1]),str(one_ticket[0][3]),str(one_ticket[0][4]),str(one_ticket[0][2]),str(self.find_booking_date(one_ticket)),str(self.ticket_slip(one_ticket)),str(self.find_amt(one_ticket)),str((self.find_amt(one_ticket)+15.71)))
+            messagebox.showinfo("Ticket Slip",confirm_mess ,parent=self.win)
+        else:
+            messagebox.showwarning("Invalid Selection", "Please select only One ticket at a time for viewing.", parent=self.win)
+    
+    def ticket_slip(self,one_ticket):
+        all_info=[]
+        conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+        my_cursor = conn.cursor()
+        current_seats_query = "SELECT name,age,sex FROM passenger_info WHERE id = %s"
+        current_seats_values = (one_ticket[0][0])
+        my_cursor.execute(current_seats_query, (current_seats_values,))
+        all_info = my_cursor.fetchall()
+        s=""
+        i=1
+        for item in all_info:
+            s+=(str(i)+".  "+str(item[0])+"------"+str(item[1])+"------"+str(item[2])+"\n")
+            i+=1
+        conn.commit
+        conn.close()
+        return s             
+        
+    def find_booking_date(self,one_ticket):
+        conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+        my_cursor = conn.cursor()
+        current_seats_query = "SELECT booking_date FROM tickets WHERE id = %s"
+        current_seats_values = (one_ticket[0][0])
+        my_cursor.execute(current_seats_query, (current_seats_values,))
+        bookdate = my_cursor.fetchone()[0]
+        conn.commit
+        conn.close()
+        return bookdate
+    
+    def find_amt(self,one_ticket):
+        p=int(one_ticket[0][2])
+        q=str(one_ticket[0][4])
+        if q=="Sleeper":
+            return 430*p
+        if q=="1st AC":
+            return 2780*p
+        if q=="2nd AC":
+            return 1860*p
+        else:
+            return 870*p
+            
+    def select_all(self, ticket_table,update_background_color):
+        self.select_all_counter += 1
+
+        new_value = 1 if self.select_all_counter % 2 != 0 else 0
+        for item in ticket_table.get_children():
+            ticket_table.item(item, values=(new_value, *ticket_table.item(item, "values")[1:]))
+            update_background_color(item)
+
+    def cancel_tickets(self, ticket_table):
+        selected_tickets = []
+        for item in ticket_table.get_children():
+            if ticket_table.item(item, "values")[0]=="1":
+                selected_tickets.append(ticket_table.item(item, "values")[1:])
+
+        if selected_tickets:
+            confirmation = messagebox.askquestion("Confirm Cancel", "Are you sure you want to cancel the selected tickets?",parent=self.win)
+            if confirmation == "yes":
+                for ticket_info in selected_tickets:
+                    self.cancel_ticket(ticket_info, ticket_table)
+                for item in ticket_table.get_children():
+                    if ticket_table.item(item, "values")[1:] in selected_tickets:
+                        ticket_table.delete(item)
+                confirm_message="Selected Seats have been Canceled Successfully.\nRs.{} amount has been Refunded to your Bank Account afte deducting 20% of Booking Cost.\nYou may Expect Your Refund within 7 Business Days.".format(self.calculate_refund(selected_tickets))
+                messagebox.showinfo("Cancellation Successful",confirm_message ,parent=self.win)
+        else:
+            messagebox.showinfo("No Selection", "Please select at least one ticket to cancel.",parent=self.win)
+
+    def calculate_refund(self,selected_seats):
+        clas=[]
+        numb=[]
+        sum=0
+        for kt in selected_seats:
+            clas.append(kt[4])
+            numb.append(kt[2])
+        for j in range(len(clas)):
+            if(clas[j]=="Sleeper"):
+                sum+=int((344*int(numb[j])))
+            elif(clas[j]=="1st AC"):
+                sum+=int((2224*int(numb[j])))
+            elif(clas[j]=="2nd AC"):
+                sum+=int((1488*int(numb[j])))
+            else:
+                sum+=int((696*int(numb[j])))
+        return sum
+
+    def cancel_ticket(self, ticket_info, ticket_table):
+        try:
+            conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+            my_cursor = conn.cursor()
+            current_seats_query = "SELECT available_seats FROM seat_availability WHERE date_of_journey = %s AND train_class = %s"
+            current_seats_values = (ticket_info[3], ticket_info[4])
+            my_cursor.execute(current_seats_query, current_seats_values)
+            current_seats = my_cursor.fetchone()[0]
+            updated_seats = current_seats + int(ticket_info[2])
+
+            update_seats_query = "UPDATE seat_availability SET available_seats = %s WHERE date_of_journey = %s AND train_class = %s"
+            update_seats_values = (updated_seats, ticket_info[3], ticket_info[4])
+            my_cursor.execute(update_seats_query, update_seats_values)
+
+            delete_ticket_query = "DELETE FROM tickets WHERE username = %s AND id = %s AND train_name = %s AND num_passengers = %s AND date_of_journey = %s AND train_class = %s"
+            delete_ticket_values = (self.username, *ticket_info)
+            my_cursor.execute(delete_ticket_query, delete_ticket_values)
+            
+            delete_passenger_query = "DELETE FROM passenger_info WHERE id = %s"
+            delete_passenger_values = (ticket_info[0],)
+            my_cursor.execute(delete_passenger_query,(delete_passenger_values))
+            conn.commit()
+        except mysql.connector.Error as err:
+            print("Error canceling tickets:", err)
+        finally:
+            if conn.is_connected():
+                conn.close()           
         
 class TicketBookingApp:
     def __init__(self, root, username, date_of_journey, train_class):
@@ -475,20 +684,22 @@ class TicketBookingApp:
 
         self.passenger_entries = []
 
-        self.add_passenger_button = tk.Button(root, text="Add Passenger", command=self.add_passenger_entry,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="blue",activeforeground="white",activebackground="blue")
+        self.add_passenger_button = tk.Button(root, text="Add Passenger",cursor="hand2", command=self.add_passenger_entry,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="blue",activeforeground="white",activebackground="blue")
         self.add_passenger_button.place(x=300,y=170,width=200,height=35)
 
-        self.cancel_passenger_button = tk.Button(root, text="Cancel Passenger", command=self.cancel_passenger,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="red",activeforeground="white",activebackground="red")
+        self.cancel_passenger_button = tk.Button(root, text="Cancel Passenger",cursor="hand2", command=self.cancel_passenger,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="red",activeforeground="white",activebackground="red")
         self.cancel_passenger_button.place(x=900,y=170,width=200,height=35)
 
-        self.book_button = tk.Button(root, text="Book Tickets", command=self.book_tickets,bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="green",activeforeground="white",activebackground="green")
+        self.book_button = tk.Button(root, text="Book Tickets", command=self.book_tickets,cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="green",activeforeground="white",activebackground="green")
         self.book_button.place(x=300,y=220,width=200,height=35)
         
-        self.bck_button1= Button(root, text="Go Back", command=lambda:self.back(root),bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="purple",activeforeground="white",activebackground="purple")
+        self.bck_button1= Button(root, text="Go Back", command=lambda:self.back(root),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="purple",activeforeground="white",activebackground="purple")
         self.bck_button1.place(x=900,y=220,width=200,height=35)
         self.username=username
         
     def back(self,win):
+        a.set_date(datetime.now().date())
+        b.set("Select Class")
         win.destroy()
 
     def fetch_available_seats(self):
@@ -543,10 +754,14 @@ class TicketBookingApp:
         self.create_passenger_widgets(1)
 
     def cancel_passenger(self):
-        if self.passenger_entries:
-            last_passenger_frame = self.passenger_entries.pop()
-            for widget in last_passenger_frame:
-                widget.destroy()
+        if not self.passenger_entries:
+            messagebox.showinfo("No Passengers", "There are no passengers to cancel.", parent=self.root)
+            return
+        last_passenger_frame = self.passenger_entries.pop()
+        for widget in last_passenger_frame:
+            widget.destroy()
+        if not self.passenger_entries:
+            messagebox.showinfo("No Passengers", "All passengers have been canceled.", parent=self.root)
 
     def book_tickets(self):
         try:
@@ -558,19 +773,42 @@ class TicketBookingApp:
                     self.update_available_seats_in_database(selected_seats)
                     available_seats = self.check_seat_availability(self.date_of_journey, self.train_class, selected_seats)
                     if 1 <= selected_seats <= available_seats:
-                        self.save_ticket_info(selected_seats)
-                        confirmation_message = "Booking successful!\n{} seat(s) booked for {} passengers on {}".format(
-                            selected_seats, total_passengers, self.train_name
-                        )
-                        self.update_available_seats(selected_seats)
-                        messagebox.showinfo("Success", confirmation_message, parent=self.root)
-                        self.root.destroy()
+                        password_confirm = simpledialog.askstring("Payment Confirmation", "Please re-enter your password to continue:", show='*')
+                        if password_confirm is None:
+                            return
+                        if self.check_password(password_confirm):
+                            confirmation = messagebox.askquestion("Final Confirmation", "Are you sure that all info of the passengers are correct?", icon='warning',parent=self.root)
+                            if confirmation == "yes":
+                                self.save_ticket_info(selected_seats)
+                                self.save_passengers()
+                                confirmation_message = "Booking successful!\n{} seat(s) booked for {} passengers on {}.\nRs.{} amount has been charged for this Booking".format(selected_seats, total_passengers, self.train_name,self.calculate_fare(selected_seats))
+                                self.update_available_seats(selected_seats)
+                                messagebox.showinfo("Success", confirmation_message, parent=self.root)
+                                self.root.destroy()
+                            else:
+                                return
+                        else:
+                            messagebox.showerror("Password Mismatch", "Incorrect password. Please enter the correct password.",parent=self.root)                 
                     else:
                         messagebox.showerror("Error", "Not enough seats available.", parent=self.root)    
             else:
                 messagebox.showerror("Error", "Please add at least one passenger.", parent=self.root)
         except ValueError:
             messagebox.showerror("Error", "Invalid input. Please enter valid numbers for age.", parent=self.root)
+
+    def calculate_fare(self,selected_seats):
+        if self.train_class=="Sleeper":
+            return (430*selected_seats)+15.71
+        if self.train_class=="1st AC":
+            return (2780*selected_seats)+15.71
+        if self.train_class=="2nd AC":
+            return (1860*selected_seats)+15.71
+        else:
+            return (870*selected_seats)+15.71
+    
+    def check_password(self, entered_password):
+        stored_password = y.get()
+        return entered_password == stored_password
 
     def validate_passenger_entry(self, entry):
         frame, name_entry, age_entry, sex_combobox = entry
@@ -639,7 +877,37 @@ class TicketBookingApp:
             print("Error updating/inserting available seats:", err)
         finally:
             if conn is not None and conn.is_connected():
-                conn.close()    
+                conn.close()   
+    
+    def save_passengers(self):
+        try:
+            conn=mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+            my_cursor = conn.cursor()
+            query = "SELECT max(id) from tickets"
+            my_cursor.execute(query)
+            uid=my_cursor.fetchone()[0]
+            conn.commit()
+        except mysql.connector.Error as err:
+            print("Error saving ticket information:", err)
+        finally:
+            if conn.is_connected():
+                conn.close()
+        try:
+            conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
+            my_cursor = conn.cursor()
+            for item in self.passenger_entries:
+                name = item[1].get()
+                age = item[2].get()
+                sex = item[3].get()
+                query = "INSERT INTO passenger_info (id, name, age, sex) VALUES (%s, %s, %s, %s)"
+                values = (uid, name, age, sex)
+                my_cursor.execute(query, values)
+                conn.commit()
+        except mysql.connector.Error as err:
+            print("Error saving ticket information:", err)
+        finally:
+            if conn.is_connected():
+                conn.close()     
     
     def save_ticket_info(self, num_passengers):
         try:

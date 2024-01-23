@@ -21,28 +21,39 @@ class JourneyInfo:
         self.select_all_counter = 0
         
         self.journey_info_heading = Label(self.win, text="Journey Information",font=("times new roman",35,"bold"),fg="blue",highlightbackground="green",highlightthickness=4)
-        self.journey_info_heading.place(x=475, y=45)
+        self.journey_info_heading.place(x=455, y=40)
 
         self.label_date = Label(win, text="Select Date of Journey:",font="verdana 15 bold",bg="black",fg="white")
-        self.label_date.place(x=200,y=140)
-
+        self.label_date.place(x=180,y=120)
         self.entry_date = DateEntry(win, width=12, background='darkblue', foreground='white', borderwidth=2,font="verdana 10 bold")
-        self.entry_date.place(x=900,y=150,width=140)
+        self.entry_date.place(x=920,y=130,width=170)
+        
+        self.label_train_name = Label(win, text="Name of Train:",font="verdana 15 bold",bg="black",fg="white")
+        self.label_train_name.place(x=180,y=165)
+        self.combo_train_name = ttk.Combobox(win, values=["Select Train","Humsafar Express", "Prayagraj Express", "Duranto Express", "Vande-Bharat Express","Rajdhani Express",
+                                                          "Purushottam Express","Sampark-Kranti Express","North-East Express","Telangana Express","KSR Bengaluru Rajdhani","Jhelum Express",
+                                                          "Paschim express","Malwa Express","Jammu-Tawi Express","Geeta-Jayanti Express","Mahabodhi Express","Gorakhdham Express",
+                                                          "Kerala Express","Magadh Express","NandanKanan Express","ANVT Superfast","ShivGanga Express","Ganga-Tapti Express","Goa Express",
+                                                          "Karnataka Express","SVDK Express","Delhi SF Express","Kalka Mail","Brahmaputra Mail","Himalaya-Queen Express","Shatabdi Express",
+                                                          "Rani-kamalaPati Express","Silcher Express","Bhrigu SF Express","Rewa SF express","Sampoorna-Kranti Express","Tamil-Nadu Express",
+                                                          "GareebRath Express","Lichhavi Express","Mahananda Express","Unchahhar Express"],state="readonly",font="verdana 10 bold")
+        self.combo_train_name.set("Select Train")
+        self.combo_train_name.place(x=920,y=170,width=170)
 
         self.label_class = Label(win, text="Class of Train:",font="verdana 15 bold",bg="black",fg="white")
-        self.label_class.place(x=200,y=190)
-        self.combo_class = ttk.Combobox(win, values=["Select Class","Sleeper", "1st AC", "2nd AC", "3rd AC"],state="readonly",font="verdana 10 bold")
+        self.label_class.place(x=180,y=210)
+        self.combo_class = ttk.Combobox(win, values=["Select Class","Chair-Car(CC)","Sleeper(SL)", "3rd AC(3A)", "2nd AC(2A)", "1st AC(1A)"],state="readonly",font="verdana 10 bold")
         self.combo_class.set("Select Class")
-        self.combo_class.place(x=900,y=190,width=140)
+        self.combo_class.place(x=920,y=215,width=170)
         
         self.view_existing_tickets_button = Button(win, text="Already Booked", command=self.view_existing_tickets,cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="blue", activeforeground="white", activebackground="blue")
-        self.view_existing_tickets_button.place(x=150,y=300,width=200,height=35)
+        self.view_existing_tickets_button.place(x=150,y=315,width=200,height=35)
         
         self.confirm_button = Button(win, text="Confirm", command=lambda: self.confirm_journey(username),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="green",activeforeground="white",activebackground="green")
-        self.confirm_button.place(x=640,y=240,width=120,height=35)
+        self.confirm_button.place(x=640,y=255,width=120,height=35)
 
         self.bck_button0= Button(win, text="Log Out", command=lambda:self.back(win),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="purple",activeforeground="white",activebackground="purple")
-        self.bck_button0.place(x=1000,y=300,width=120,height=35)
+        self.bck_button0.place(x=1040,y=315,width=120,height=35)
         
         self.delete_acc_btn= Button(win, text="Delete Account", command=lambda:self.delete_acc(win),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="black",bg="white",activeforeground="black",activebackground="white")
         self.delete_acc_btn.place(x=1000,y=620,width=200,height=35)
@@ -88,13 +99,18 @@ class JourneyInfo:
     def confirm_journey(self, username):
         date_of_journey = self.entry_date.get_date().strftime("%Y-%m-%d")
         train_class = self.combo_class.get()
-        global a,b
+        train_name=self.combo_train_name.get()
+        global a,b,c
         a=self.entry_date
         b=self.combo_class
+        c=self.combo_train_name
         today = datetime.now().date()
         selected_date = datetime.strptime(date_of_journey, "%Y-%m-%d").date()
         if selected_date < today:
             messagebox.showwarning("Invalid Date", "Please select a future date for your journey.", parent=self.win)
+            return
+        if train_name=="Select Train":
+            messagebox.showwarning("Invalid Train", "Please select any Train for your journey.", parent=self.win)
             return
         if train_class=="Select Class":
             messagebox.showwarning("Invalid Class", "Please select any Class of Train for your journey.", parent=self.win)
@@ -103,7 +119,7 @@ class JourneyInfo:
             ticket_booking_window = Toplevel() 
             ticket_booking_window.title("Railway Ticket Booking")
             ticket_booking_window.geometry("500x400")
-            ticket_booking_app = TicketBookingApp(ticket_booking_window, username, date_of_journey, train_class)
+            ticket_booking_app = TicketBookingApp(ticket_booking_window, username, date_of_journey, train_name, train_class)
           
     def view_existing_tickets(self):
         conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
@@ -167,9 +183,9 @@ class JourneyInfo:
         ticket_table.bind("<ButtonRelease-1>", on_item_click)
         
         show_tkt_btn = Button(self.win, text="Show Ticket", command=lambda: self.show_ticket(ticket_table),cursor="hand2",bd=3,relief=RIDGE, font="verdana 15 bold",fg="white",bg="grey", activeforeground="white", activebackground="grey")
-        show_tkt_btn.place(x=600,y=300,width=200,height=35)
+        show_tkt_btn.place(x=600,y=315,width=200,height=35)
 
-        select_all_button = tk.Button(self.win, text="Select All", command=lambda: self.select_all(ticket_table,update_background_color), cursor="hand2",bd=3, relief=RIDGE, font="verdana 15 bold", fg="black", bg="yellow",activeforeground="Black", activebackground="yellow")
+        select_all_button = tk.Button(self.win, text="Select All", command=lambda: self.select_all(ticket_table,update_background_color), cursor="hand2",bd=3, relief=RIDGE, font="verdana 15 bold", fg="black", bg="aqua",activeforeground="Black", activebackground="aqua")
         select_all_button.place(x=150, y=620, width=200, height=35)
 
         cancel_button = tk.Button(self.win, text="Cancel Tickets", command=lambda: self.cancel_tickets(ticket_table),cursor="hand2", bd=3, relief=RIDGE, font="verdana 15 bold", fg="white", bg="red",activeforeground="white", activebackground="red")
@@ -221,11 +237,13 @@ class JourneyInfo:
     def find_amt(self,one_ticket):
         p=int(one_ticket[0][2])
         q=str(one_ticket[0][4])
-        if q=="Sleeper":
+        if q=="Chair-Car(CC)":
+            return 210*p
+        if q=="Sleeper(SL)":
             return 430*p
-        if q=="1st AC":
+        if q=="1st AC(1A)":
             return 2780*p
-        if q=="2nd AC":
+        if q=="2nd AC(2A)":
             return 1860*p
         else:
             return 870*p
@@ -265,11 +283,13 @@ class JourneyInfo:
             clas.append(kt[4])
             numb.append(kt[2])
         for j in range(len(clas)):
-            if(clas[j]=="Sleeper"):
+            if(clas[j]=="Chair-Car(CC)"):
+                sum+=int((168*int(numb[j])))
+            elif(clas[j]=="Sleeper(SL)"):
                 sum+=int((344*int(numb[j])))
-            elif(clas[j]=="1st AC"):
+            elif(clas[j]=="1st AC(1A)"):
                 sum+=int((2224*int(numb[j])))
-            elif(clas[j]=="2nd AC"):
+            elif(clas[j]=="2nd AC(2A)"):
                 sum+=int((1488*int(numb[j])))
             else:
                 sum+=int((696*int(numb[j])))
@@ -304,7 +324,7 @@ class JourneyInfo:
                 conn.close()           
         
 class TicketBookingApp:
-    def __init__(self, root, username, date_of_journey, train_class):
+    def __init__(self, root, username, date_of_journey,train_name, train_class):
         self.root = root
         self.root.title("Railway Ticket Booking")
         self.root.geometry("1550x800+0+0")
@@ -313,15 +333,18 @@ class TicketBookingApp:
         self.date_of_journey = date_of_journey
         self.train_class = train_class
         self.username =username
-
-        self.train_name = "Humsafar Express(12275)"
+        self.train_name = train_name
         self.available_seats = self.fetch_available_seats()
 
-        self.label_train_info = tk.Label(root, text="Humsafar Express(12275)",font=("times new roman",35,"bold"),fg="red",highlightbackground="blue",highlightthickness=4)
+        self.label_train_info = tk.Label(root, text=self.train_name,font=("times new roman",35,"bold"),fg="red",highlightbackground="blue",highlightthickness=4)
         self.label_train_info.place(x=100, y=45)
 
-        self.label_seats_available = tk.Label(root, text="Available Seats:    {}".format(self.available_seats),font="verdana 15 bold",bg="black",fg="white")
-        self.label_seats_available.place(x=900,y=55)
+        self.label_seats_available = tk.Label(root, text="Available Seats :    {}".format(self.available_seats),font="verdana 15 bold",bg="black",fg="white")
+        self.label_seats_available.place(x=900,y=40)
+        self.label_selected_date = tk.Label(root, text="Selected Date   :    {}".format(self.date_of_journey),font="verdana 15 bold",bg="black",fg="white")
+        self.label_selected_date.place(x=900,y=65)
+        self.label_train_class = tk.Label(root, text="Selected Class  :    {}".format(self.train_class),font="verdana 15 bold",bg="black",fg="white")
+        self.label_train_class.place(x=900,y=90)
 
         self.passenger_entries = []
 
@@ -338,10 +361,11 @@ class TicketBookingApp:
         self.bck_button1.place(x=900,y=220,width=200,height=35)
         self.username=username
         
-    def back(self,win):
+    def back(self,root):
         a.set_date(datetime.now().date())
         b.set("Select Class")
-        win.destroy()
+        c.set("Select Train")
+        root.destroy()
 
     def fetch_available_seats(self):
         conn = None
@@ -351,8 +375,8 @@ class TicketBookingApp:
             conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
             my_cursor = conn.cursor()
 
-            check_query = "SELECT available_seats FROM seat_availability WHERE date_of_journey = %s AND train_class = %s"
-            check_values = (self.date_of_journey, self.train_class)
+            check_query = "SELECT available_seats FROM seat_availability WHERE (date_of_journey = %s AND train_class = %s AND train_name = %s)"
+            check_values = (self.date_of_journey, self.train_class,self.train_name)
             my_cursor.execute(check_query, check_values)
             existing_record = my_cursor.fetchone()
 
@@ -414,8 +438,7 @@ class TicketBookingApp:
                 valid_entries = all(self.validate_passenger_entry(entry) for entry in self.passenger_entries)
                 if valid_entries:
                     selected_seats = total_passengers
-                    self.update_available_seats_in_database(selected_seats)
-                    available_seats = self.check_seat_availability(self.date_of_journey, self.train_class, selected_seats)
+                    available_seats = self.check_seat_availability()
                     if 1 <= selected_seats <= available_seats:
                         password_confirm = simpledialog.askstring("Payment Confirmation", "Please re-enter your password to continue:", show='*')
                         if password_confirm is None:
@@ -425,10 +448,11 @@ class TicketBookingApp:
                             if confirmation == "yes":
                                 self.save_ticket_info(selected_seats)
                                 self.save_passengers()
+                                self.update_available_seats_in_database(selected_seats)
                                 confirmation_message = "Booking successful!\n{} seat(s) booked for {} passengers on {}.\nRs.{} amount has been charged for this Booking".format(selected_seats, total_passengers, self.train_name,self.calculate_fare(selected_seats))
                                 self.update_available_seats(selected_seats)
                                 messagebox.showinfo("Success", confirmation_message, parent=self.root)
-                                self.root.destroy()
+                                self.back(self.root)
                             else:
                                 return
                         else:
@@ -441,6 +465,8 @@ class TicketBookingApp:
             messagebox.showerror("Error", "Invalid input. Please enter valid numbers for age.", parent=self.root)
 
     def calculate_fare(self,selected_seats):
+        if self.train_class=="Chair-Car(CC)":
+            return (210*selected_seats)+15.71
         if self.train_class=="Sleeper":
             return (430*selected_seats)+15.71
         if self.train_class=="1st AC":
@@ -475,21 +501,30 @@ class TicketBookingApp:
             return False
         return True
     
-    def check_seat_availability(self, date_of_journey, train_class, num_seats):
+    def check_seat_availability(self):
         conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
         my_cursor = conn.cursor()
 
-        query = "SELECT available_seats FROM seat_availability WHERE date_of_journey = %s AND train_class = %s"
-        values = (date_of_journey, train_class)
+        query = "SELECT available_seats FROM seat_availability WHERE date_of_journey = %s AND train_class = %s AND train_name = %s"
+        values = (self.date_of_journey, self.train_class, self.train_name)
         my_cursor.execute(query, values)
         result = my_cursor.fetchone()
 
-        conn.close()
-
         if result:
+            conn.close()
             return result[0]
         else:
-            return 0
+            try:
+                insert_query = "INSERT INTO seat_availability (date_of_journey, train_class, available_seats, train_name) VALUES (%s, %s, %s, %s)"
+                available_seats = 70
+                insert_values = (self.date_of_journey, self.train_class, available_seats, self.train_name)
+                my_cursor.execute(insert_query, insert_values)
+                conn.commit()
+            except mysql.connector.Error as err:
+                print("Error inserting available seats:", err)
+            finally:
+                conn.close()
+                return available_seats
 
     def update_available_seats(self, booked_seats):
         self.available_seats -= booked_seats
@@ -501,19 +536,19 @@ class TicketBookingApp:
             conn = mysql.connector.connect(host="localhost", username="root", password="123456", database="passengerregister")
             my_cursor = conn.cursor()
 
-            check_query = "SELECT * FROM seat_availability WHERE date_of_journey = %s AND train_class = %s"
-            check_values = (self.date_of_journey, self.train_class)
+            check_query = "SELECT * FROM seat_availability WHERE (date_of_journey = %s AND train_class = %s AND train_name = %s)"
+            check_values = (self.date_of_journey, self.train_class,self.train_name)
             my_cursor.execute(check_query, check_values)
             existing_record = my_cursor.fetchone()
 
             if existing_record:
-                update_query = "UPDATE seat_availability SET available_seats = available_seats - %s WHERE date_of_journey = %s AND train_class = %s"
-                update_values = (num_seats, self.date_of_journey, self.train_class)
+                update_query = "UPDATE seat_availability SET available_seats = available_seats - %s WHERE (date_of_journey = %s AND train_class = %s AND train_name = %s)"
+                update_values = (num_seats, self.date_of_journey, self.train_class,self.train_name)
                 my_cursor.execute(update_query, update_values)
             else:
-                insert_query = "INSERT INTO seat_availability (date_of_journey, train_class, available_seats) VALUES (%s, %s, %s)"
-                available_seats = 70 - num_seats  # Calculate available seats for the new record
-                insert_values = (self.date_of_journey, self.train_class, available_seats)
+                insert_query = "INSERT INTO seat_availability (date_of_journey, train_class, available_seats,train_name) VALUES (%s, %s, %s,%s)"
+                available_seats = 70 - num_seats  
+                insert_values = (self.date_of_journey, self.train_class, available_seats,self.train_name)
                 my_cursor.execute(insert_query, insert_values)
 
             conn.commit()
